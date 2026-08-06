@@ -3,418 +3,251 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>幸运大转盘</title>
+<title>🧋 今天喝什么</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(ellipse at center, #1a1a2e 0%, #0d0d1a 100%);
+    display: flex; justify-content: center; align-items: center;
+    background: radial-gradient(ellipse at center, #2d1810 0%, #1a0e08 100%);
     font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-    overflow-y: auto;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    overflow-y: auto; user-select: none; -webkit-tap-highlight-color: transparent;
   }
-
-  .main-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-    padding: 30px 20px;
-  }
-
+  .main-container { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 24px 16px; }
   .title {
-    font-size: 36px;
-    font-weight: 900;
-    color: #FFD700;
-    text-shadow: 0 0 20px rgba(255,215,0,0.6), 0 0 40px rgba(255,215,0,0.3);
+    font-size: 30px; font-weight: 900; color: #F5DEB3;
+    text-shadow: 0 0 20px rgba(245,222,179,0.6), 0 0 40px rgba(245,222,179,0.3);
     letter-spacing: 6px;
   }
-
-  .wheel-wrapper {
-    position: relative;
-    width: 440px;
-    height: 440px;
-  }
-
+  .wheel-wrapper { position: relative; width: 440px; height: 440px; }
   canvas {
-    display: block;
-    border-radius: 50%;
-    box-shadow: 0 0 40px rgba(255,215,0,0.3), 0 0 80px rgba(255,215,0,0.1);
+    display: block; border-radius: 50%;
+    box-shadow: 0 0 40px rgba(245,222,179,0.3), 0 0 80px rgba(245,222,179,0.1);
   }
-
-  /* 指针 */
   .pointer {
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
-    width: 0;
-    height: 0;
-    border-left: 22px solid transparent;
-    border-right: 22px solid transparent;
-    border-top: 48px solid #FF1744;
+    position: absolute; top: -30px; left: 50%; transform: translateX(-50%); z-index: 10;
+    width: 0; height: 0;
+    border-left: 20px solid transparent; border-right: 20px solid transparent;
+    border-top: 44px solid #C62828;
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
     animation: bounce 1.5s ease-in-out infinite;
   }
   .pointer::after {
-    content: '';
-    position: absolute;
-    top: -56px;
-    left: -14px;
-    width: 28px;
-    height: 28px;
-    background: #FFD700;
-    border-radius: 50%;
+    content: ''; position: absolute; top: -52px; left: -12px;
+    width: 24px; height: 24px; background: #FFD700; border-radius: 50%;
     box-shadow: 0 0 12px rgba(255,215,0,0.8);
   }
-  @keyframes bounce {
-    0%, 100% { top: -30px; }
-    50% { top: -36px; }
-  }
-
-  /* 中心按钮 */
+  @keyframes bounce { 0%, 100% { top: -30px; } 50% { top: -36px; } }
   .center-btn {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #FF1744, #D50000);
-    border: 4px solid #FFD700;
-    color: #fff;
-    font-size: 20px;
-    font-weight: 900;
-    cursor: pointer;
-    z-index: 5;
-    letter-spacing: 4px;
-    box-shadow: 0 0 20px rgba(255,23,68,0.6), 0 6px 20px rgba(0,0,0,0.3);
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 85px; height: 85px; border-radius: 50%;
+    background: linear-gradient(135deg, #C62828, #8B0000);
+    border: 4px solid #FFD700; color: #fff; font-size: 18px; font-weight: 900;
+    cursor: pointer; z-index: 5; letter-spacing: 3px;
+    box-shadow: 0 0 20px rgba(198,40,40,0.6), 0 6px 20px rgba(0,0,0,0.3);
     transition: transform 0.2s;
   }
-  .center-btn:hover {
-    transform: translate(-50%, -50%) scale(1.08);
-  }
-  .center-btn:active {
-    transform: translate(-50%, -50%) scale(0.93);
-  }
-  .center-btn.spinning {
-    pointer-events: none;
-    opacity: 0.6;
-  }
+  .center-btn:hover { transform: translate(-50%, -50%) scale(1.08); }
+  .center-btn:active { transform: translate(-50%, -50%) scale(0.93); }
+  .center-btn.spinning { pointer-events: none; opacity: 0.6; }
 
-  /* 弹窗 */
   .overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.72);
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.72); z-index: 100;
+    display: flex; justify-content: center; align-items: center;
     animation: fadeIn 0.25s ease;
   }
   .overlay.hidden { display: none; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
   .prize-dialog {
     position: relative;
-    background: linear-gradient(135deg, #fff9c4, #fff176);
-    border: 5px solid #FF6F00;
-    border-radius: 24px;
-    padding: 40px 44px 34px;
-    text-align: center;
+    background: linear-gradient(135deg, #FFF8E1, #FFE0B2);
+    border: 5px solid #8D6E63; border-radius: 24px;
+    padding: 36px 36px 28px; text-align: center;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     animation: popIn 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    max-width: 360px;
-    width: 90%;
+    max-width: 360px; width: 90%;
   }
-  @keyframes popIn {
-    0% { transform: scale(0); opacity: 0; }
-    70% { transform: scale(1.08); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  .prize-emoji {
-    font-size: 68px;
-    margin-bottom: 4px;
-  }
-
-  .prize-label {
-    font-size: 18px;
-    color: #E65100;
-    font-weight: 700;
-    margin: 6px 0;
-  }
-
-  .prize-name {
-    font-size: 34px;
-    font-weight: 900;
-    color: #D50000;
-    margin: 8px 0 20px;
-  }
-
+  @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+  .prize-emoji { font-size: 64px; margin-bottom: 4px; }
+  .prize-label { font-size: 16px; color: #6D4C41; font-weight: 700; margin: 4px 0; }
+  .prize-name { font-size: 28px; font-weight: 900; color: #BF360C; margin: 8px 0 20px; }
   .close-btn {
-    background: linear-gradient(135deg, #FF6F00, #E65100);
-    color: #fff;
-    border: none;
-    padding: 12px 50px;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 3px;
-    box-shadow: 0 6px 16px rgba(230,81,0,0.4);
+    background: linear-gradient(135deg, #8D6E63, #5D4037);
+    color: #fff; border: none; padding: 12px 48px; border-radius: 50px;
+    font-size: 18px; font-weight: 700; cursor: pointer; letter-spacing: 3px;
+    box-shadow: 0 6px 16px rgba(93,64,55,0.4);
   }
   .close-btn:hover { transform: translateY(-2px); }
   .close-btn:active { transform: translateY(0); }
-
-  /* 彩纸 */
   .confetti-piece {
-    position: absolute;
-    width: 10px; height: 10px;
-    border-radius: 3px;
+    position: absolute; border-radius: 3px; pointer-events: none;
     animation: confettiFall var(--fall-dur) linear forwards;
-    pointer-events: none;
   }
   @keyframes confettiFall {
     0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
     100% { transform: translateY(480px) rotate(720deg) scale(0.2); opacity: 0; }
   }
-
-  /* 响应式 */
   @media (max-width: 500px) {
     .wheel-wrapper { width: 340px; height: 340px; }
     canvas { width: 340px; height: 340px; }
-    .title { font-size: 24px; letter-spacing: 3px; }
-    .center-btn { width: 70px; height: 70px; font-size: 16px; }
-    .pointer { border-left-width: 18px; border-right-width: 18px; border-top-width: 38px; top: -24px; }
-    .pointer::after { top: -46px; left: -12px; width: 24px; height: 24px; }
+    .title { font-size: 22px; letter-spacing: 3px; }
+    .center-btn { width: 68px; height: 68px; font-size: 15px; }
+    .pointer { border-left-width: 16px; border-right-width: 16px; border-top-width: 34px; top: -22px; }
+    .pointer::after { top: -42px; left: -10px; width: 20px; height: 20px; }
+    .prize-name { font-size: 22px; }
   }
 </style>
 </head>
 <body>
 
 <div class="main-container">
-  <div class="title">幸运大转盘</div>
-
+  <div class="title">🧋 今天喝什么</div>
   <div class="wheel-wrapper" id="wheelWrapper">
     <canvas id="wheelCanvas" width="440" height="440"></canvas>
     <div class="pointer"></div>
-    <button class="center-btn" id="spinBtn" onclick="spin()">抽 奖</button>
+    <button class="center-btn" id="spinBtn" onclick="spin()">选 茶</button>
   </div>
 </div>
 
-<!-- 弹窗 -->
 <div class="overlay hidden" id="overlay" onclick="if(event.target===this)closeDialog()">
   <div class="prize-dialog" id="prizeDialog">
     <div class="prize-emoji" id="prizeEmoji"></div>
-    <div class="prize-label">恭喜你!</div>
+    <div class="prize-label">🎉 今天就喝它！</div>
     <div class="prize-name" id="prizeName"></div>
     <button class="close-btn" onclick="closeDialog()">好 的</button>
   </div>
 </div>
 
 <script>
-// ==================== 数据 ====================
 var prizes = [
-  { name: '红包 5.55元', icon: '🧧', color: '#E74C3C' },
-  { name: '红包 2.88元', icon: '🧧', color: '#F39C12' },
-  { name: '红包 5.88元', icon: '💵', color: '#27AE60' },
-  { name: '红包 8.88元', icon: '💰', color: '#2980B9' },
-  { name: '奶茶一杯',   icon: '🧋', color: '#8E44AD' },
-  { name: '小蛋糕一个', icon: '🍰', color: '#E91E63' },
-  { name: '再来一次',   icon: '🔄', color: '#00BCD4' }
+  { brand: '喜茶',          drink: '烤黑糖波波牛乳', icon: '🟤', color: '#D84315' },
+  { brand: '古茗',          drink: '超A芝士葡萄',     icon: '🟣', color: '#7B1FA2' },
+  { brand: '一点点',        drink: '冰淇淋红茶',       icon: '🟠', color: '#EF6C00' },
+  { brand: '茶百道',        drink: '豆乳玉麒麟',       icon: '🟡', color: '#F9A825' },
+  { brand: '茉莉奶白',      drink: '针王苹果',         icon: '⚪', color: '#78909C' },
+  { brand: '爷爷不泡茶',    drink: '兰香青柠',         icon: '🟢', color: '#2E7D32' },
+  { brand: '沪上阿姨',      drink: '草莓大福',         icon: '🔴', color: '#C62828' },
+  { brand: 'OT另茶',        drink: '泰式咸法酪',       icon: '🟤', color: '#4E342E' },
+  { brand: '裕莲茶楼',      drink: '特浓茶钻琥珀奶',   icon: '🟠', color: '#BF360C' }
 ];
-var n = 7;
+var n = 9;
 var segAngle = (2 * Math.PI) / n;
 
-// ==================== Canvas ====================
 var canvas = document.getElementById('wheelCanvas');
 var ctx = canvas.getContext('2d');
-var size = canvas.width;
-var cx = size / 2;
-var cy = size / 2;
-var radius = size / 2 - 4;
-
-var currentAngle = 0;
-var spinning = false;
+var size = canvas.width, cx = size / 2, cy = size / 2, radius = size / 2 - 4;
+var currentAngle = 0, spinning = false;
 
 function drawWheel(rotation) {
   ctx.clearRect(0, 0, size, size);
-
-  // 画6个扇形
   for (var i = 0; i < n; i++) {
     var startA = rotation + i * segAngle - Math.PI / 2;
     var endA = startA + segAngle;
-
-    // 扇形
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, radius, startA, endA);
     ctx.closePath();
     ctx.fillStyle = prizes[i].color;
     ctx.fill();
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#FFF8E1';
+    ctx.lineWidth = 2.5;
     ctx.stroke();
 
-    // 文字 - 放在扇形中心，不旋转
     var midA = startA + segAngle / 2;
-    var textR = radius * 0.6;
+    var textR = radius * 0.58;
     var tx = cx + textR * Math.cos(midA);
     var ty = cy + textR * Math.sin(midA);
 
-    // 编号
-    ctx.font = 'bold 28px "Microsoft YaHei", sans-serif';
+    ctx.font = 'bold 15px "Microsoft YaHei", sans-serif';
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.shadowColor = 'rgba(0,0,0,0.4)';
-    ctx.shadowBlur = 4;
-    ctx.fillText('[' + (i+1) + ']', tx, ty - 14);
-
-    // 奖品名
-    ctx.font = 'bold 16px "Microsoft YaHei", sans-serif';
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
     ctx.shadowBlur = 3;
-    ctx.fillText(prizes[i].name, tx, ty + 16);
+    ctx.fillText(prizes[i].brand, tx, ty - 12);
+    ctx.font = 'bold 11px "Microsoft YaHei", sans-serif';
+    ctx.fillText(prizes[i].drink, tx, ty + 14);
     ctx.shadowBlur = 0;
   }
 
-  // 白色分隔线
   for (var j = 0; j < n; j++) {
     var lineA = rotation + j * segAngle - Math.PI / 2;
-    var lx = cx + radius * Math.cos(lineA);
-    var ly = cy + radius * Math.sin(lineA);
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(lx, ly);
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 3;
-    ctx.stroke();
+    var lx = cx + radius * Math.cos(lineA), ly = cy + radius * Math.sin(lineA);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(lx, ly);
+    ctx.strokeStyle = '#FFF8E1'; ctx.lineWidth = 2.5; ctx.stroke();
   }
 
-  // 中心圆
-  var grad = ctx.createRadialGradient(cx, cy, 28, cx, cy, 56);
-  grad.addColorStop(0, '#FFD700');
-  grad.addColorStop(0.5, '#FFA000');
-  grad.addColorStop(1, '#BF360C');
-  ctx.beginPath();
-  ctx.arc(cx, cy, 54, 0, 2 * Math.PI);
-  ctx.fillStyle = grad;
-  ctx.fill();
-  ctx.strokeStyle = '#FFD700';
-  ctx.lineWidth = 3;
-  ctx.stroke();
+  var grad = ctx.createRadialGradient(cx, cy, 24, cx, cy, 52);
+  grad.addColorStop(0, '#FFD700'); grad.addColorStop(0.5, '#C62828'); grad.addColorStop(1, '#4E342E');
+  ctx.beginPath(); ctx.arc(cx, cy, 50, 0, 2 * Math.PI);
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 3; ctx.stroke();
 }
-
-// 初始绘制
 drawWheel(0);
 
-// ==================== 音效 ====================
 function playWinSound() {
   try {
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     var notes = [523.25, 659.25, 783.99, 1046.50];
-    var dur = 0.15;
-
     notes.forEach(function(freq, i) {
-      var osc = audioCtx.createOscillator();
-      var gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.type = 'triangle';
-      osc.frequency.value = freq;
-
-      var t0 = audioCtx.currentTime + i * dur;
-      var t1 = t0 + dur + 0.1;
-
+      var osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'triangle'; osc.frequency.value = freq;
+      var t0 = audioCtx.currentTime + i * 0.15, t1 = t0 + 0.25;
       gain.gain.setValueAtTime(0, t0);
       gain.gain.linearRampToValueAtTime(0.3, t0 + 0.02);
-      gain.gain.linearRampToValueAtTime(0.15, t0 + dur);
+      gain.gain.linearRampToValueAtTime(0.15, t0 + 0.15);
       gain.gain.linearRampToValueAtTime(0, t1);
-
-      osc.start(t0);
-      osc.stop(t1);
+      osc.start(t0); osc.stop(t1);
     });
   } catch(e) {}
 }
 
-// ==================== 旋转 ====================
 function spin() {
-  if (spinning) return;
-  spinning = true;
-
+  if (spinning) return; spinning = true;
   var btn = document.getElementById('spinBtn');
-  btn.classList.add('spinning');
-  btn.textContent = '...';
+  btn.classList.add('spinning'); btn.textContent = '...';
 
-  var extraRotations = 5 + Math.floor(Math.random() * 4);
-  var randomAngle = Math.random() * 2 * Math.PI;
-  var totalDelta = extraRotations * 2 * Math.PI + randomAngle;
-
-  var startAngle = currentAngle;
-  var targetAngle = currentAngle + totalDelta;
-  var duration = 4000 + Math.random() * 1500;
-  var startTime = performance.now();
+  var extra = 5 + Math.floor(Math.random() * 4);
+  var totalDelta = extra * 2 * Math.PI + Math.random() * 2 * Math.PI;
+  var startAngle = currentAngle, targetAngle = currentAngle + totalDelta;
+  var duration = 4000 + Math.random() * 1500, startTime = performance.now();
 
   function animate(now) {
-    var elapsed = now - startTime;
-    var progress = Math.min(elapsed / duration, 1);
+    var progress = Math.min((now - startTime) / duration, 1);
     var eased = 1 - Math.pow(1 - progress, 3.5);
-
     currentAngle = startAngle + totalDelta * eased;
     drawWheel(currentAngle);
-
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
-      currentAngle = targetAngle;
-      drawWheel(currentAngle);
+      currentAngle = targetAngle; drawWheel(currentAngle);
       spinning = false;
-      btn.classList.remove('spinning');
-      btn.textContent = '抽 奖';
-
-      // 计算中奖结果
+      btn.classList.remove('spinning'); btn.textContent = '选 茶';
       var norm = ((currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-      var ptrAngle = -Math.PI / 2;
-      var rel = (ptrAngle - norm + 2 * Math.PI) % (2 * Math.PI);
+      var rel = (-Math.PI / 2 - norm + 2 * Math.PI) % (2 * Math.PI);
       var idx = Math.floor(rel / segAngle) % n;
-
       showPrize(idx);
     }
   }
-
   requestAnimationFrame(animate);
 }
 
-// ==================== 弹窗 ====================
 function showPrize(idx) {
-  var prize = prizes[idx];
-  playWinSound();
-  spawnConfetti();
-
-  document.getElementById('prizeEmoji').textContent = prize.icon;
-  document.getElementById('prizeName').textContent = prize.name;
+  var p = prizes[idx];
+  playWinSound(); spawnConfetti();
+  document.getElementById('prizeEmoji').textContent = p.icon;
+  document.getElementById('prizeName').innerHTML = p.brand + '<br><small style="font-size:19px;color:#6D4C41;">' + p.drink + '</small>';
   document.getElementById('overlay').classList.remove('hidden');
 }
 
-function closeDialog() {
-  document.getElementById('overlay').classList.add('hidden');
-}
+function closeDialog() { document.getElementById('overlay').classList.add('hidden'); }
 
-// ==================== 彩纸 ====================
 function spawnConfetti() {
-  var colors = ['#FF1744','#FFD700','#00E676','#2979FF','#FF6D00','#D500F9','#00E5FF','#FF4081'];
-  var dialog = document.getElementById('prizeDialog');
-  var frag = document.createDocumentFragment();
-
-  for (var i = 0; i < 50; i++) {
+  var colors = ['#D84315','#FFD700','#7B1FA2','#EF6C00','#2E7D32','#F9A825','#C62828','#BF360C'];
+  var dialog = document.getElementById('prizeDialog'), frag = document.createDocumentFragment();
+  for (var i = 0; i < 45; i++) {
     var piece = document.createElement('div');
     piece.className = 'confetti-piece';
     piece.style.left = Math.random() * 100 + '%';
@@ -425,7 +258,6 @@ function spawnConfetti() {
     piece.style.setProperty('--fall-dur', (Math.random() * 1.5 + 1.5) + 's');
     piece.style.animationDelay = Math.random() * 0.4 + 's';
     frag.appendChild(piece);
-
     setTimeout(function() { piece.remove(); }, 2500);
   }
   dialog.appendChild(frag);
@@ -433,4 +265,3 @@ function spawnConfetti() {
 </script>
 </body>
 </html>
-<!-- cache-bust v2 -->
